@@ -26,4 +26,10 @@ if [ "$changed" = "1" ]; then
     chown -R node:node /paperclip
 fi
 
+# Ensure the instance data directory exists and is writable by the app user,
+# regardless of whether a UID/GID remap occurred.
+INSTANCE_ID=${PAPERCLIP_INSTANCE_ID:-default}
+mkdir -p "/paperclip/instances/${INSTANCE_ID}/data"
+chown node:node "/paperclip/instances/${INSTANCE_ID}/data"
+
 exec gosu node "$@"
