@@ -26,10 +26,11 @@ if [ "$changed" = "1" ]; then
     chown -R node:node /paperclip
 fi
 
-# Ensure the instance data directory exists and is writable by the app user,
-# regardless of whether a UID/GID remap occurred.
+# Always ensure the instance directory tree exists and is fully owned by the
+# app user. mkdir -p runs as root so we must chown from /paperclip downward to
+# avoid any root-owned parent dirs blocking the app from creating subdirectories.
 INSTANCE_ID=${PAPERCLIP_INSTANCE_ID:-default}
-mkdir -p "/paperclip/instances/${INSTANCE_ID}/data"
-chown node:node "/paperclip/instances/${INSTANCE_ID}/data"
+mkdir -p "/paperclip/instances/${INSTANCE_ID}"
+chown -R node:node /paperclip
 
 exec gosu node "$@"
